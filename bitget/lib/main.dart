@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
 
 Future<Bitget> fetchBitget()async{
   final response = await http.get(
-      Uri.parse('https://api.bitget.com/api/mix/v1/market/contracts?productType=umcbl')
+      Uri.parse('https://api.bitget.com/api/mix/v1/market/tickers?productType=umcbl')
   );
   if(response.statusCode == 200){
     print("Response body: ${response.body}");
@@ -51,44 +51,16 @@ class _BitgetWidgetState extends State<BitgetWidget> {
     futureBitget = fetchBitget();
   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: "bit",
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: const Text('Fetch Data Example'),
-//         ),
-//         body: Center(
-//           child: FutureBuilder<Data>(
-//             future: futureBitget,
-//             builder: (context, snapshot){
-//               if(snapshot.hasData){
-//               return Text(snapshot.data);
-//               } else if (snapshot.hasError) {
-//               return Text("${snapshot.error}");
-//               }
-//               return CircularProgressIndicator();
-//             },
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Bitget>(
         future: futureBitget,
         builder: (context, snapshot) {
           if (snapshot.hasData == false) {
-            return const CircularProgressIndicator();
+            return CircularProgressIndicator();
           }
           else if (snapshot.hasError) {
-            return const Text("error");
+            return Text("error");
           }
           return Column(
             children: <Widget>[
@@ -97,7 +69,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                 width: double.infinity,
                 child: Card(
                   elevation: 4,
-                  child: Text("${e.baseCoin!} ${e.buyLimitPriceRatio!} ${e.limitOpenTime!}"),
+                  child: Text("${e.symbol} ${e.priceChangePercent} ${e.last} "),
                 ),
               )),
             ],
@@ -112,126 +84,112 @@ class _BitgetWidgetState extends State<BitgetWidget> {
 /**
  * 비트겟 object담을 그릇
  */
+
 class Bitget {
   String? code;
-  List<Data>? data;
   String? msg;
   int? requestTime;
+  List<Data>? data;
 
-  Bitget({this.code, this.data, this.msg, this.requestTime});
+  Bitget({this.code, this.msg, this.requestTime, this.data});
 
   Bitget.fromJson(Map<String, dynamic> json) {
     code = json['code'];
+    msg = json['msg'];
+    requestTime = json['requestTime'];
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
         data!.add(new Data.fromJson(v));
       });
     }
-    msg = json['msg'];
-    requestTime = json['requestTime'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['code'] = this.code;
+    data['msg'] = this.msg;
+    data['requestTime'] = this.requestTime;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['msg'] = this.msg;
-    data['requestTime'] = this.requestTime;
     return data;
   }
 }
 
 class Data {
-  String? baseCoin;
-  String? buyLimitPriceRatio;
-  String? feeRateUpRatio;
-  String? makerFeeRate;
-  String? minTradeNum;
-  String? openCostUpRatio;
-  String? priceEndStep;
-  String? pricePlace;
-  String? quoteCoin;
-  String? sellLimitPriceRatio;
-  String? sizeMultiplier;
-  List<String>? supportMarginCoins;
   String? symbol;
-  String? takerFeeRate;
-  String? volumePlace;
-  String? symbolType;
-  String? symbolStatus;
-  String? offTime;
-  String? limitOpenTime;
+  String? last;
+  String? bestAsk;
+  String? bestBid;
+  String? bidSz;
+  String? askSz;
+  String? high24h;
+  String? low24h;
+  String? timestamp;
+  String? priceChangePercent;
+  String? baseVolume;
+  String? quoteVolume;
+  String? usdtVolume;
+  String? openUtc;
+  String? chgUtc;
 
   Data(
-      {this.baseCoin,
-        this.buyLimitPriceRatio,
-        this.feeRateUpRatio,
-        this.makerFeeRate,
-        this.minTradeNum,
-        this.openCostUpRatio,
-        this.priceEndStep,
-        this.pricePlace,
-        this.quoteCoin,
-        this.sellLimitPriceRatio,
-        this.sizeMultiplier,
-        this.supportMarginCoins,
-        this.symbol,
-        this.takerFeeRate,
-        this.volumePlace,
-        this.symbolType,
-        this.symbolStatus,
-        this.offTime,
-        this.limitOpenTime});
+      {this.symbol,
+        this.last,
+        this.bestAsk,
+        this.bestBid,
+        this.bidSz,
+        this.askSz,
+        this.high24h,
+        this.low24h,
+        this.timestamp,
+        this.priceChangePercent,
+        this.baseVolume,
+        this.quoteVolume,
+        this.usdtVolume,
+        this.openUtc,
+        this.chgUtc});
 
   Data.fromJson(Map<String, dynamic> json) {
-    baseCoin = json['baseCoin'];
-    buyLimitPriceRatio = json['buyLimitPriceRatio'];
-    feeRateUpRatio = json['feeRateUpRatio'];
-    makerFeeRate = json['makerFeeRate'];
-    minTradeNum = json['minTradeNum'];
-    openCostUpRatio = json['openCostUpRatio'];
-    priceEndStep = json['priceEndStep'];
-    pricePlace = json['pricePlace'];
-    quoteCoin = json['quoteCoin'];
-    sellLimitPriceRatio = json['sellLimitPriceRatio'];
-    sizeMultiplier = json['sizeMultiplier'];
-    supportMarginCoins = json['supportMarginCoins'].cast<String>();
     symbol = json['symbol'];
-    takerFeeRate = json['takerFeeRate'];
-    volumePlace = json['volumePlace'];
-    symbolType = json['symbolType'];
-    symbolStatus = json['symbolStatus'];
-    offTime = json['offTime'];
-    limitOpenTime = json['limitOpenTime'];
+    last = json['last'];
+    bestAsk = json['bestAsk'];
+    bestBid = json['bestBid'];
+    bidSz = json['bidSz'];
+    askSz = json['askSz'];
+    high24h = json['high24h'];
+    low24h = json['low24h'];
+    timestamp = json['timestamp'];
+    priceChangePercent = json['priceChangePercent'];
+    baseVolume = json['baseVolume'];
+    quoteVolume = json['quoteVolume'];
+    usdtVolume = json['usdtVolume'];
+    openUtc = json['openUtc'];
+    chgUtc = json['chgUtc'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['baseCoin'] = this.baseCoin;
-    data['buyLimitPriceRatio'] = this.buyLimitPriceRatio;
-    data['feeRateUpRatio'] = this.feeRateUpRatio;
-    data['makerFeeRate'] = this.makerFeeRate;
-    data['minTradeNum'] = this.minTradeNum;
-    data['openCostUpRatio'] = this.openCostUpRatio;
-    data['priceEndStep'] = this.priceEndStep;
-    data['pricePlace'] = this.pricePlace;
-    data['quoteCoin'] = this.quoteCoin;
-    data['sellLimitPriceRatio'] = this.sellLimitPriceRatio;
-    data['sizeMultiplier'] = this.sizeMultiplier;
-    data['supportMarginCoins'] = this.supportMarginCoins;
     data['symbol'] = this.symbol;
-    data['takerFeeRate'] = this.takerFeeRate;
-    data['volumePlace'] = this.volumePlace;
-    data['symbolType'] = this.symbolType;
-    data['symbolStatus'] = this.symbolStatus;
-    data['offTime'] = this.offTime;
-    data['limitOpenTime'] = this.limitOpenTime;
+    data['last'] = this.last;
+    data['bestAsk'] = this.bestAsk;
+    data['bestBid'] = this.bestBid;
+    data['bidSz'] = this.bidSz;
+    data['askSz'] = this.askSz;
+    data['high24h'] = this.high24h;
+    data['low24h'] = this.low24h;
+    data['timestamp'] = this.timestamp;
+    data['priceChangePercent'] = this.priceChangePercent;
+    data['baseVolume'] = this.baseVolume;
+    data['quoteVolume'] = this.quoteVolume;
+    data['usdtVolume'] = this.usdtVolume;
+    data['openUtc'] = this.openUtc;
+    data['chgUtc'] = this.chgUtc;
     return data;
   }
 }
+
 
 
 
