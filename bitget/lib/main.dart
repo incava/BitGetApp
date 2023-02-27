@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme:ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const BitgetWidget(),
+      home: BitgetWidget(),
     );
   }
 }
@@ -63,15 +63,73 @@ class _BitgetWidgetState extends State<BitgetWidget> {
             return Text("error");
           }
           return Column(
-            children: <Widget>[
-              ...snapshot.data!.data!.map((e) =>
-              SizedBox(
-                width: double.infinity,
-                child: Card(
-                  elevation: 4,
-                  child: Text("${e.symbol} ${e.priceChangePercent} ${e.last} "),
+            children: [
+              Container(
+                margin: const EdgeInsets.all(32.0),
+              ),
+              Container(
+                margin: EdgeInsets.all(15.0),
+                child:Row(
+                  children: const [
+                    Expanded(flex: 1, child: Text(
+                        '실시간 시세',
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.white),
+                        textAlign: TextAlign.left
+                    ),
+                    ),
+                    Expanded(flex: 1, child: Text(
+                        '변동율(%)',
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.white),
+                        textAlign: TextAlign.center
+                    ),
+                    ),
+                    Expanded(flex: 1, child: Text(
+                      '단위(KRW)',
+                      style: TextStyle(
+                          fontSize: 14, color: Colors.white),
+                      textAlign: TextAlign.right,
+                  ),),
+                ],
                 ),
-              )),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(5.0),
+                  itemCount: snapshot.data!.data?.length,
+                  itemBuilder: (context, int index) {
+                    return Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        children: [
+                          Expanded(flex: 1, child: Text(
+                              '${snapshot.data!.data![index].symbol}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.white),
+                              textAlign: TextAlign.left
+                          ),
+                          ),
+                          Expanded(flex: 1, child: Text(
+                              '${snapshot.data!.data![index]
+                                  .priceChangePercent}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.white),
+                              textAlign: TextAlign.center
+                          ),
+                          ),
+                          Expanded(flex: 1, child: Text(
+                            '${snapshot.data!.data![index].last}',
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.white),
+                            textAlign: TextAlign.right,
+                          ),),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           );
         }
