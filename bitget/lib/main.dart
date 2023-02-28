@@ -73,7 +73,13 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children:[
-                      ElevatedButton(
+                      Expanded(
+                        flex:3,
+                          child:gradientText()
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
                           onPressed: () {
                             setState(() {
                               futureBitget = fetchBitget();
@@ -81,6 +87,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                               //flutter 정말 사기다..
                             });},
                           child: const Text("화면갱신")
+                        ),
                       ),
                     ],
                   ),
@@ -150,7 +157,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      return Divider(thickness: 1);
+                      return const Divider(thickness: 1);
                     },
                   ),
                 ),
@@ -191,6 +198,11 @@ Text dateText(){
   var t = DateFormat('갱신시간 : MM월 dd일 HH시 mm분 ss초').format(dt);
   return Text(t, style: const TextStyle(fontSize: 14, color:Colors.black),
       textAlign: TextAlign.right);
+}
+
+Widget gradientText() {
+  final Shader linearGradientShader = const LinearGradient(colors: [Colors.red, Colors.orange,Colors.blue]).createShader(const Rect.fromLTWH(0.0, 20.0, 150.0, 20.0));
+  return Text('Bitget 비트겟', style: TextStyle(foreground: Paint()..shader = linearGradientShader, fontSize: 40));
 }
 
 
