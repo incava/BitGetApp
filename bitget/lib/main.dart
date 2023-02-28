@@ -3,31 +3,30 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
+
 //runApp은 호출될 때 위젯을 가져야 한다. 그래야 호출이 됨.
 //myApp위젯 -> 커스텀 위젯 최초 빌드.
 
 void main() => runApp((const MyApp()));
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key:key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Welcome to Flutter",
-      theme:ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: BitgetWidget(),
-    );
+        title: "Welcome to Flutter",
+        theme: ThemeData(
+          primarySwatch: Colors.grey,
+        ),
+        home: BitgetWidget());
   }
 }
 
-Future<Bitget> fetchBitget()async{
-  final response = await http.get(
-      Uri.parse('https://api.bitget.com/api/mix/v1/market/tickers?productType=umcbl')
-  );
-  if(response.statusCode == 200){
+Future<Bitget> fetchBitget() async {
+  final response = await http.get(Uri.parse(
+      'https://api.bitget.com/api/mix/v1/market/tickers?productType=umcbl'));
+  if (response.statusCode == 200) {
     print("Response body: ${response.body}");
     return Bitget.fromJson(json.decode(response.body));
   } else {
@@ -35,8 +34,8 @@ Future<Bitget> fetchBitget()async{
   }
 }
 
-class BitgetWidget extends StatefulWidget{
-  const BitgetWidget({Key? key}) : super(key:key);
+class BitgetWidget extends StatefulWidget {
+  const BitgetWidget({Key? key}) : super(key: key);
 
   @override
   _BitgetWidgetState createState() => _BitgetWidgetState();
@@ -53,91 +52,123 @@ class _BitgetWidgetState extends State<BitgetWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Bitget>(
-        future: futureBitget,
-        builder: (context, snapshot) {
-          if (snapshot.hasData == false) {
-            return CircularProgressIndicator();
-          }
-          else if (snapshot.hasError) {
-            return Text("error");
-          }
-          return Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(32.0),
-              ),
-              Container(
-                margin: EdgeInsets.all(15.0),
-                child:Row(
-                  children: const [
-                    Expanded(flex: 1, child: Text(
-                        '실시간 시세',
-                        style: TextStyle(
-                            fontSize: 14, color: Colors.white),
-                        textAlign: TextAlign.left
-                    ),
-                    ),
-                    Expanded(flex: 1, child: Text(
-                        '변동율(%)',
-                        style: TextStyle(
-                            fontSize: 14, color: Colors.white),
-                        textAlign: TextAlign.center
-                    ),
-                    ),
-                    Expanded(flex: 1, child: Text(
-                      '단위(KRW)',
-                      style: TextStyle(
-                          fontSize: 14, color: Colors.white),
-                      textAlign: TextAlign.right,
-                  ),),
-                ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: FutureBuilder<Bitget>(
+          future: futureBitget,
+          builder: (context, snapshot) {
+            if (snapshot.hasData == false) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text("error");
+            }
+            return Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(32.0),
                 ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(5.0),
-                  itemCount: snapshot.data!.data?.length,
-                  itemBuilder: (context, int index) {
-                    return Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: Row(
-                        children: [
-                          Expanded(flex: 1, child: Text(
-                              '${snapshot.data!.data![index].symbol}',
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                              textAlign: TextAlign.left
-                          ),
-                          ),
-                          Expanded(flex: 1, child: Text(
-                              '${snapshot.data!.data![index]
-                                  .priceChangePercent}',
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                              textAlign: TextAlign.center
-                          ),
-                          ),
-                          Expanded(flex: 1, child: Text(
-                            '${snapshot.data!.data![index].last}',
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.white),
-                            textAlign: TextAlign.right,
-                          ),),
-                        ],
+                Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: const [
+                      ElevatedButton(
+                          onPressed: null,
+                          child: Text("화면갱신")
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        }
+                Container(
+                    margin: const EdgeInsets.all(10.0),
+                    child: Row(
+                      //row를 오른쪽 정렬
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        //오른쪽에 정렬
+                        Text('갱신시간: 4사09분',
+                              style: TextStyle(fontSize: 14, color: Colors.black),
+                              textAlign: TextAlign.right),
+                      ],
+                    )
+                  ),
+                Container(
+                  margin: EdgeInsets.all(15.0),
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        flex: 1,
+                        child: Text('실시간 시세',
+                            style: TextStyle(fontSize: 14, color: Colors.black),
+                            textAlign: TextAlign.left),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text('변동율(%)',
+                            style: TextStyle(fontSize: 14, color: Colors.black),
+                            textAlign: TextAlign.center),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          '단위(KRW)',
+                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(5.0),
+                    itemCount: snapshot.data!.data!.length,
+                    itemBuilder: (context, int index) {
+                      return Container(
+                        //color: Colors.white,
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                  '${snapshot.data!.data![index].symbol}',
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.black),
+                                  textAlign: TextAlign.left),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                  '${snapshot.data!.data![index].priceChangePercent}',
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.black),
+                                  textAlign: TextAlign.center),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                '${snapshot.data!.data![index].last}',
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.black),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider(thickness: 1);
+                    },
+                  ),
+                ),
+              ],
+            );
+          }),
     );
   }
 }
-
-
 
 /**
  * 비트겟 object담을 그릇
@@ -194,20 +225,20 @@ class Data {
 
   Data(
       {this.symbol,
-        this.last,
-        this.bestAsk,
-        this.bestBid,
-        this.bidSz,
-        this.askSz,
-        this.high24h,
-        this.low24h,
-        this.timestamp,
-        this.priceChangePercent,
-        this.baseVolume,
-        this.quoteVolume,
-        this.usdtVolume,
-        this.openUtc,
-        this.chgUtc});
+      this.last,
+      this.bestAsk,
+      this.bestBid,
+      this.bidSz,
+      this.askSz,
+      this.high24h,
+      this.low24h,
+      this.timestamp,
+      this.priceChangePercent,
+      this.baseVolume,
+      this.quoteVolume,
+      this.usdtVolume,
+      this.openUtc,
+      this.chgUtc});
 
   Data.fromJson(Map<String, dynamic> json) {
     symbol = json['symbol'];
@@ -247,8 +278,3 @@ class Data {
     return data;
   }
 }
-
-
-
-
-
