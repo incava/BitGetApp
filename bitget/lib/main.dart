@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:developer';
 
 //runApp은 호출될 때 위젯을 가져야 한다. 그래야 호출이 됨.
@@ -79,7 +80,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                               //호출 할 때 마다 뷰 초기화해서 변수를 알아서 넣어줌.
                               //flutter 정말 사기다..
                             });},
-                          child: Text("화면갱신")
+                          child: const Text("화면갱신")
                       ),
                     ],
                   ),
@@ -91,14 +92,12 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         //오른쪽에 정렬
-                        Text('갱신시간: 4사09분',
-                              style: TextStyle(fontSize: 14, color: Colors.black),
-                              textAlign: TextAlign.right),
+                        dateText()
                       ],
                     )
                   ),
                 Container(
-                  margin: EdgeInsets.all(15.0),
+                  margin: const EdgeInsets.all(15.0),
                   child: Row(
                     children: const [
                       Expanded(
@@ -131,34 +130,21 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                     itemBuilder: (context, int index) {
                       return Container(
                         //color: Colors.white,
-                        padding: EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
                         child: Row(
                           children: [
                             Expanded(
                               flex: 1,
-                              child: Text(
-                                  '${snapshot.data!.data![index].symbol}',
-                                  style: const TextStyle(
-                                      fontSize: 14, color: Colors.black),
-                                  textAlign: TextAlign.left),
+                              child: coinNameText(txt: "${snapshot.data!.data![index].symbol}")
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(
-                                  '${snapshot.data!.data![index].priceChangePercent}',
-                                  style: const TextStyle(
-                                      fontSize: 14, color: Colors.black),
-                                  textAlign: TextAlign.center),
+                              child: percentText(txt: "${snapshot.data!.data![index].priceChangePercent}")
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(
-                                '${snapshot.data!.data![index].last}',
-                                style: const TextStyle(
-                                    fontSize: 14, color: Colors.black),
-                                textAlign: TextAlign.right,
+                              child: toKRWText(txt:'${snapshot.data!.data![index].last}')
                               ),
-                            ),
                           ],
                         ),
                       );
@@ -174,6 +160,39 @@ class _BitgetWidgetState extends State<BitgetWidget> {
     );
   }
 }
+Text percentText({required String txt}) {
+  //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
+  var t = double.parse(txt); // double로 바꾸기.
+  //color를 증감에 따른 설정
+  var colorNum = (t == 0)? Colors.black : (t>0) ? Colors.red : Colors.blue;
+  String tt = t.toStringAsFixed(3); //소수 3자리 반올림 txt
+  var text = double.parse(tt);
+  return Text("$text%", style: TextStyle(fontSize: 14, color:colorNum),
+      textAlign: TextAlign.center);
+}
+
+Text coinNameText({required String txt}) {
+  //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
+  txt = txt.replaceAll("USDT_UMCBL", "");
+  return Text(txt, style: const TextStyle(fontSize: 14, color:Colors.black),
+      textAlign: TextAlign.left);
+}
+
+Text toKRWText({required dynamic txt}) {
+  //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
+  var dallor = 1322.76;
+  var f = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
+  txt = (double.parse(txt) * dallor).ceil();
+  return Text(f.format(txt), style: const TextStyle(fontSize: 14, color:Colors.black),
+      textAlign: TextAlign.right);
+}
+Text dateText(){
+  DateTime dt = DateTime.now();
+  var t = DateFormat('갱신시간 : MM월 dd일 HH시 mm분 ss초').format(dt);
+  return Text(t, style: const TextStyle(fontSize: 14, color:Colors.black),
+      textAlign: TextAlign.right);
+}
+
 
 /**
  * 비트겟 object담을 그릇
