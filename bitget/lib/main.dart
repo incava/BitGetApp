@@ -71,9 +71,14 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                   margin: const EdgeInsets.all(10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
+                    children:[
                       ElevatedButton(
-                          onPressed: null,
+                          onPressed: () {
+                            setState(() {
+                              futureBitget = fetchBitget();
+                              //호출 할 때 마다 뷰 초기화해서 변수를 알아서 넣어줌.
+                              //flutter 정말 사기다..
+                            });},
                           child: Text("화면갱신")
                       ),
                     ],
