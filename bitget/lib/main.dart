@@ -8,6 +8,7 @@ import 'dart:developer';
 //runApp은 호출될 때 위젯을 가져야 한다. 그래야 호출이 됨.
 //myApp위젯 -> 커스텀 위젯 최초 빌드.
 
+//처음 실행시 MyApp 실행
 void main() => runApp((const MyApp()));
 
 class MyApp extends StatelessWidget {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Welcome to Flutter",
+        title: "Bitget에 오신 것을 환영합니다!",
         theme: ThemeData(
           primarySwatch: Colors.grey,
         ),
@@ -28,7 +29,7 @@ Future<Bitget> fetchBitget() async {
   final response = await http.get(Uri.parse(
       'https://api.bitget.com/api/mix/v1/market/tickers?productType=umcbl'));
   if (response.statusCode == 200) {
-    print("Response body: ${response.body}");
+    //uri 파싱 성공시,
     return Bitget.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to load album');
@@ -37,7 +38,6 @@ Future<Bitget> fetchBitget() async {
 
 class BitgetWidget extends StatefulWidget {
   const BitgetWidget({Key? key}) : super(key: key);
-
   @override
   _BitgetWidgetState createState() => _BitgetWidgetState();
 }
@@ -45,12 +45,13 @@ class BitgetWidget extends StatefulWidget {
 class _BitgetWidgetState extends State<BitgetWidget> {
   late Future<Bitget> futureBitget;
 
+  //처음 상태 정의
   @override
   void initState() {
     super.initState();
     futureBitget = fetchBitget();
   }
-
+  //build할 것 정의
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,13 +59,16 @@ class _BitgetWidgetState extends State<BitgetWidget> {
       body: FutureBuilder<Bitget>(
           future: futureBitget,
           builder: (context, snapshot) {
+            //데이터를 못가져왔을 시,
             if (snapshot.hasData == false) {
               return CircularProgressIndicator();
             } else if (snapshot.hasError) {
               return Text("error");
             }
+            //데이터를 가져왔을 때,
             return Column(
               children: [
+                //마진 주기.
                 Container(
                   margin: const EdgeInsets.all(32.0),
                 ),
@@ -73,10 +77,12 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children:[
+                      //제목
                       Expanded(
                         flex:3,
                           child:gradientText()
                       ),
+                      //버튼
                       Expanded(
                         flex: 1,
                         child: ElevatedButton(
@@ -92,6 +98,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                     ],
                   ),
                 ),
+                // 갱신 시간
                 Container(
                     margin: const EdgeInsets.all(10.0),
                     child: Row(
@@ -103,6 +110,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                       ],
                     )
                   ),
+                // field
                 Container(
                   margin: const EdgeInsets.all(15.0),
                   child: Row(
@@ -130,6 +138,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                     ],
                   ),
                 ),
+                //ListView.separated로 리스트 뷰를 expanded로 나눠서 균등하게 표현
                 Expanded(
                   child: ListView.separated(
                     padding: const EdgeInsets.all(5.0),
@@ -156,6 +165,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                         ),
                       );
                     },
+                    // 경계선 빌더
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(thickness: 1);
                     },
@@ -194,6 +204,7 @@ Text toKRWText({required dynamic txt}) {
       textAlign: TextAlign.right);
 }
 Text dateText(){
+  //현재 시간 생성
   DateTime dt = DateTime.now();
   var t = DateFormat('갱신시간 : MM월 dd일 HH시 mm분 ss초').format(dt);
   return Text(t, style: const TextStyle(fontSize: 14, color:Colors.black),
@@ -201,6 +212,7 @@ Text dateText(){
 }
 
 Widget gradientText() {
+  //그라이데이션을 위한 메서드
   final Shader linearGradientShader = const LinearGradient(colors: [Colors.red, Colors.orange,Colors.blue]).createShader(const Rect.fromLTWH(0.0, 20.0, 150.0, 20.0));
   return Text('Bitget 비트겟', style: TextStyle(foreground: Paint()..shader = linearGradientShader, fontSize: 40));
 }
