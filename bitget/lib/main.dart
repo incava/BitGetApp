@@ -189,7 +189,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                             Expanded(
                               flex: 1,// 코인의 종류
                               child: nameAry(mainText: coinNameText(txt: "${snapshot.data!.data![index].symbol}"),
-                                  subText: volumeText(txt: "${snapshot.data!.data![index].baseVolume}"),
+                                  subText: volumeText(txt: "${snapshot.data!.data![index].usdtVolume}"),
                                   align: MainAxisAlignment.start)
                             ),
                             Expanded(
@@ -260,10 +260,30 @@ ElevatedButton percentText({required dynamic lastPrice, dynamic openPrice}) {
 // 코인 거래 양을 변환 하기 위한 메서드
 Text volumeText({required dynamic txt}){
   txt = double.parse(txt);
-  txt = (txt/1000).ceil(); // 1000으로 나누고 M(메가?)부터 시작
-  txt = (txt>1000)? "${(txt/1000).toStringAsFixed(2)}K" : "${txt}M"; // 1000으로 더 나눌 수 있으면 나누고 K로 변환.
-  return Text("Vol $txt", style: const TextStyle(fontSize: 12, color:Colors.grey),
-      textAlign: TextAlign.left);
+  int unitCount = 0;
+  while(txt>=1000){
+    txt /= 1000;
+    unitCount++;
+  }
+  txt = txt.toStringAsFixed(2);
+  switch(unitCount){
+    case 0:
+        break;
+    case 1:
+        txt += "M";
+        break;
+    case 2:
+        txt += "K";
+        break;
+    case 3:
+        txt+= "B";
+        break;
+    case 4:
+        txt+= "T";
+        break;
+  }
+    return Text("VOL $txt", style: const TextStyle(fontSize: 12, color:Colors.grey),
+        textAlign: TextAlign.left);
 }
 
 // 코인 이름을 나타내기 위한 메서드
