@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:developer';
+import 'package:flutter/services.dart';
 
 //runApp은 호출될 때 위젯을 가져야 한다. 그래야 호출이 됨.
 //myApp위젯 -> 커스텀 위젯 최초 빌드.
@@ -82,6 +83,10 @@ class _BitgetWidgetState extends State<BitgetWidget> {
   //build할 것 정의
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      statusBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+    ));
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder<Bitget>(
