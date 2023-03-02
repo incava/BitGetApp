@@ -202,7 +202,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                               child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    percentText(txt:"${snapshot.data!.data![index].priceChangePercent}")
+                                    percentText(txt:"${snapshot.data!.data![index].last}", txt2: "${snapshot.data!.data![index].openUtc}")
                                   ],
                                 )
                               ),
@@ -233,12 +233,13 @@ class _BitgetWidgetState extends State<BitgetWidget> {
 //       textAlign: TextAlign.right);
 // }
 
-ElevatedButton percentText({required String txt}) {
+ElevatedButton percentText({required dynamic txt, dynamic txt2}) {
   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
-  var t = double.parse(txt); // double로 바꾸기.
-  //color를 증감에 따른 설정
+  // var t = double.parse(txt); // double로 바꾸기.
+  var t = (double.parse(txt)- double.parse(txt2)) * 100 / double.parse(txt2);
+  // //color를 증감에 따른 설정
   var colorNum = (t == 0)? Colors.black : (t>0) ? const Color(0xff4DA0B1) : Colors.red ;
-  String tt = t.toStringAsFixed(4); //소수 4자리 반올림 txt
+  String tt = t.toStringAsFixed(2); //소수 4자리 반올림 txt
   var text = (tt[0]!='-')? '+$tt' : tt; // 만약에 음수가 아니라면 +부호 붙여주기.
   return ElevatedButton(
       style: ElevatedButton.styleFrom(
