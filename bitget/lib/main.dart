@@ -56,7 +56,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
     super.initState();
     futureBitget = fetchBitget();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      flutterToast();
+      //flutterToast();
       _start(); // 위젯이 다 불러와진 후, 콜백 받아서 1초마다 갱신.
     });
   }
@@ -100,44 +100,49 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                 Container(
                   margin: const EdgeInsets.all(32.0),
                 ),
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children:[
-                      //제목
-                      Expanded(
-                        flex:3,
-                          child:gradientText()
-                      ),
-                      //버튼
-                      Expanded(
-                        flex: 1,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              futureBitget = fetchBitget();
-                              //호출 할 때 마다 뷰 초기화해서 변수를 알아서 넣어줌.
-                              //flutter 정말 사기다..
-                            });},
-                          child: const Text("화면갱신")
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
+
+                // Container(
+                //   margin: const EdgeInsets.all(10.0),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.end,
+                //     children:[
+                //       //제목
+                //       Expanded(
+                //         flex:3,
+                //           child:gradientText()
+                //       ),
+                //       //버튼
+                //       Expanded(
+                //         flex: 1,
+                //         child: ElevatedButton(
+                //           onPressed: () {
+                //             setState(() {
+                //               futureBitget = fetchBitget();
+                //               //호출 할 때 마다 뷰 초기화해서 변수를 알아서 넣어줌.
+                //               //flutter 정말 사기다..
+                //             });},
+                //           child: const Text("화면갱신")
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+
+
                 // 갱신 시간
-                Container(
-                    margin: const EdgeInsets.all(10.0),
-                    child: Row(
-                      //row를 오른쪽 정렬
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        //오른쪽에 정렬
-                        dateText()
-                      ],
-                    )
-                  ),
+                // Container(
+                //     margin: const EdgeInsets.all(10.0),
+                //     child: Row(
+                //       //row를 오른쪽 정렬
+                //       mainAxisAlignment: MainAxisAlignment.end,
+                //       children: [
+                //         //오른쪽에 정렬
+                //         dateText()
+                //       ],
+                //     )
+                //   ),
+
                 // field
                 Container(
                   margin: const EdgeInsets.all(15.0),
@@ -145,21 +150,21 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                     children: const [
                       Expanded(
                         flex: 1,
-                        child: Text('실시간 시세',
-                            style: TextStyle(fontSize: 14, color: Colors.black),
+                        child: Text('Coin/Volume',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
                             textAlign: TextAlign.left),
                       ),
                       Expanded(
                         flex: 1,
-                        child: Text('변동율(%)',
-                            style: TextStyle(fontSize: 14, color: Colors.black),
-                            textAlign: TextAlign.center),
+                        child: Text('Last price',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                            textAlign: TextAlign.right),
                       ),
                       Expanded(
                         flex: 1,
                         child: Text(
-                          '단위(KRW)',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          'Change%',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -174,20 +179,29 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                     itemBuilder: (context, int index) {
                       return Container(
                         //color: Colors.white,
-                        padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
                         child: Row(
                           children: [
                             Expanded(
                               flex: 1,
-                              child: coinNameText(txt: "${snapshot.data!.data![index].symbol}")
+                              child: nameAry(mainText: coinNameText(txt: "${snapshot.data!.data![index].symbol}"),
+                                  subText: volumeText(txt: "${snapshot.data!.data![index].baseVolume}"),
+                                  align: MainAxisAlignment.start)
                             ),
                             Expanded(
                               flex: 1,
-                              child: percentText(txt: "${snapshot.data!.data![index].priceChangePercent}")
+                              child: nameAry(mainText: toKRWText(txt:"${snapshot.data!.data![index].last}"),
+                                  subText: dallorText(txt: "${snapshot.data!.data![index].last}"),
+                                  align: MainAxisAlignment.end)
                             ),
                             Expanded(
                               flex: 1,
-                              child: toKRWText(txt:'${snapshot.data!.data![index].last}')
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    percentText(txt:"${snapshot.data!.data![index].priceChangePercent}")
+                                  ],
+                                )
                               ),
                           ],
                         ),
@@ -205,21 +219,51 @@ class _BitgetWidgetState extends State<BitgetWidget> {
     );
   }
 }
-Text percentText({required String txt}) {
+// Text percentText({required String txt}) {
+//   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
+//   var t = double.parse(txt); // double로 바꾸기.
+//   //color를 증감에 따른 설정
+//   var colorNum = (t == 0)? Colors.black : (t>0) ? Colors.red : Colors.blue;
+//   String tt = t.toStringAsFixed(3); //소수 3자리 반올림 txt
+//   var text = double.parse(tt);
+//   return Text("$text%", style: TextStyle(fontSize: 14, color:colorNum),
+//       textAlign: TextAlign.right);
+// }
+
+ElevatedButton percentText({required String txt}) {
   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
   var t = double.parse(txt); // double로 바꾸기.
   //color를 증감에 따른 설정
-  var colorNum = (t == 0)? Colors.black : (t>0) ? Colors.red : Colors.blue;
-  String tt = t.toStringAsFixed(3); //소수 3자리 반올림 txt
-  var text = double.parse(tt);
-  return Text("$text%", style: TextStyle(fontSize: 14, color:colorNum),
-      textAlign: TextAlign.center);
+  var colorNum = (t == 0)? Colors.black : (t>0) ? const Color(0xff4DA0B1) : Colors.red ;
+  String tt = t.toStringAsFixed(4); //소수 4자리 반올림 txt
+  var text = (tt[0]!='-')? '+$tt' : tt; // 만약에 음수가 아니라면 +부호 붙여주기.
+  return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+      shape: RoundedRectangleBorder(	//모서리를 둥글게
+      borderRadius: BorderRadius.circular(4)),
+      backgroundColor: colorNum
+      ),
+    onPressed: () {  },
+    child:Text(
+      "$text%",
+      style: const TextStyle(fontSize: 14, color:Colors.white)
+    )
+  );
 }
+
+Text volumeText({required dynamic txt}){
+  txt = double.parse(txt);
+  txt = (txt/1000).ceil();
+  txt = (txt>1000)? "${(txt/1000).toStringAsFixed(2)}K" : "${txt}M";
+  return Text("Vol $txt", style: const TextStyle(fontSize: 12, color:Colors.grey),
+      textAlign: TextAlign.left);
+}
+
 
 Text coinNameText({required String txt}) {
   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
   txt = txt.replaceAll("USDT_UMCBL", "");
-  return Text(txt, style: const TextStyle(fontSize: 14, color:Colors.black),
+  return Text(txt, style: const TextStyle(fontSize: 15, color:Colors.black),
       textAlign: TextAlign.left);
 }
 
@@ -228,17 +272,46 @@ Text toKRWText({required dynamic txt}) {
   var dallor = 1322.76;
   var f = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
   txt = (double.parse(txt) * dallor).ceil();
-  return Text(f.format(txt), style: const TextStyle(fontSize: 14, color:Colors.black),
+  return Text(f.format(txt), style: const TextStyle(fontSize: 15, color:Colors.black),
       textAlign: TextAlign.right);
 }
 
-Text dateText(){
-  //현재 시간 생성
-  DateTime dt = DateTime.now();
-  var t = DateFormat('갱신시간 : MM월 dd일 HH시 mm분 ss초').format(dt);
-  return Text(t, style: const TextStyle(fontSize: 14, color:Colors.black),
+Text dallorText({required dynamic txt}){
+  txt = double.parse(txt);
+  txt = txt.toStringAsFixed(2);
+  return Text("\$$txt", style: const TextStyle(fontSize: 12, color:Colors.grey),
       textAlign: TextAlign.right);
 }
+
+
+
+//2개읠 열로 나누기 위한 array 중복 코드를 위해 작성.
+Column nameAry({required dynamic mainText, required dynamic subText, required dynamic align}){
+  return Column(
+    children: [
+      Row(
+        mainAxisAlignment: align,
+        children: [
+          mainText
+        ],
+      ),
+      Row(
+        mainAxisAlignment: align,
+        children: [
+          subText
+        ],
+      )
+    ],
+  );
+}
+
+// Text dateText(){
+//   //현재 시간 생성
+//   DateTime dt = DateTime.now();
+//   var t = DateFormat('갱신시간 : MM월 dd일 HH시 mm분 ss초').format(dt);
+//   return Text(t, style: const TextStyle(fontSize: 14, color:Colors.black),
+//       textAlign: TextAlign.right);
+// }
 
 Widget gradientText() {
   //그라이데이션을 위한 메서드
@@ -248,16 +321,16 @@ Widget gradientText() {
 
 
 // 토스트 메서드
-void flutterToast(){
-  Fluttertoast.showToast(
-      msg: "msg",
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.red,
-      fontSize: 20,
-      textColor: Colors.white,
-      toastLength: Toast.LENGTH_LONG,
-  );
-}
+// void flutterToast(){
+//   Fluttertoast.showToast(
+//       msg: "msg",
+//       gravity: ToastGravity.BOTTOM,
+//       backgroundColor: Colors.red,
+//       fontSize: 20,
+//       textColor: Colors.white,
+//       toastLength: Toast.LENGTH_LONG,
+//   );
+// }
 
 /**
  * 비트겟 object담을 그릇
