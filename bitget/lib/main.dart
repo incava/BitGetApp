@@ -1,8 +1,11 @@
 //모든 디바이스 일관된 디자인 가이드라인 sdk 지원.
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'dart:async';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:developer';
 
 //runApp은 호출될 때 위젯을 가져야 한다. 그래야 호출이 됨.
@@ -14,12 +17,13 @@ void main() => runApp((const MyApp()));
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: "Bitget에 오신 것을 환영합니다!",
         theme: ThemeData(
-          primarySwatch: Colors.grey,
+          primaryColor : Colors.cyan
         ),
         home: BitgetWidget());
   }
@@ -44,13 +48,37 @@ class BitgetWidget extends StatefulWidget {
 
 class _BitgetWidgetState extends State<BitgetWidget> {
   late Future<Bitget> futureBitget;
+  late Timer _timer;
 
   //처음 상태 정의
   @override
   void initState() {
     super.initState();
     futureBitget = fetchBitget();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      flutterToast();
+      _start(); // 위젯이 다 불러와진 후, 콜백 받아서 1초마다 갱신.
+    });
   }
+
+// 위젯이 dispose될 때 _timer를 cancel합니다.
+// ?. 옵셔널 체이닝을 통해 _timer가 null이 아닌 경우 cancel하도록 해줬습니다.
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _start() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        futureBitget = fetchBitget();
+      });
+    });
+  }
+
+
+
   //build할 것 정의
   @override
   Widget build(BuildContext context) {
@@ -203,6 +231,7 @@ Text toKRWText({required dynamic txt}) {
   return Text(f.format(txt), style: const TextStyle(fontSize: 14, color:Colors.black),
       textAlign: TextAlign.right);
 }
+
 Text dateText(){
   //현재 시간 생성
   DateTime dt = DateTime.now();
@@ -217,6 +246,18 @@ Widget gradientText() {
   return Text('Bitget 비트겟', style: TextStyle(foreground: Paint()..shader = linearGradientShader, fontSize: 40));
 }
 
+
+// 토스트 메서드
+void flutterToast(){
+  Fluttertoast.showToast(
+      msg: "msg",
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.red,
+      fontSize: 20,
+      textColor: Colors.white,
+      toastLength: Toast.LENGTH_LONG,
+  );
+}
 
 /**
  * 비트겟 object담을 그릇
