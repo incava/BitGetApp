@@ -70,6 +70,7 @@ class _BitgetWidgetState extends State<BitgetWidget> {
     super.dispose();
   }
 
+  //빌드 된 후, 타이머를 작동시켜 1초마다 state 변환.
   void _start() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -186,23 +187,23 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                         child: Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 1,// 코인의 종류
                               child: nameAry(mainText: coinNameText(txt: "${snapshot.data!.data![index].symbol}"),
                                   subText: volumeText(txt: "${snapshot.data!.data![index].baseVolume}"),
                                   align: MainAxisAlignment.start)
                             ),
                             Expanded(
-                              flex: 1,
+                              flex: 1, // 코인의 가격
                               child: nameAry(mainText: toKRWText(txt:"${snapshot.data!.data![index].last}"),
                                   subText: dallorText(txt: "${snapshot.data!.data![index].last}"),
                                   align: MainAxisAlignment.end)
                             ),
                             Expanded(
                               flex: 1,
-                              child: Row(
+                              child: Row( // 코인의 하루 퍼센트
                                   mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    percentText(txt:"${snapshot.data!.data![index].last}", txt2: "${snapshot.data!.data![index].openUtc}")
+                                  children: [ // 현재 가격과 오픈 코인 가격으로 퍼센트를 구하기 위해 파라미터에 대입.
+                                    percentText(lastPrice:"${snapshot.data!.data![index].last}", openPrice: "${snapshot.data!.data![index].openUtc}")
                                   ],
                                 )
                               ),
@@ -233,13 +234,14 @@ class _BitgetWidgetState extends State<BitgetWidget> {
 //       textAlign: TextAlign.right);
 // }
 
-ElevatedButton percentText({required dynamic txt, dynamic txt2}) {
+
+ElevatedButton percentText({required dynamic lastPrice, dynamic openPrice}) {
   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
-  // var t = double.parse(txt); // double로 바꾸기.
-  var t = (double.parse(txt)- double.parse(txt2)) * 100 / double.parse(txt2);
-  // //color를 증감에 따른 설정
+  //공식 : ( 현재 가격 - 장 시장 가격 ) * 100 / 장 시장 가격
+  var t = (double.parse(lastPrice) - double.parse(openPrice)) * 100 / double.parse(openPrice);
+  // //color를 증감에 따른 설정 같으면 검정, +면 cyan과 유사한 비트겟 브랜드 색, -면 빨강색
   var colorNum = (t == 0)? Colors.black : (t>0) ? const Color(0xff4DA0B1) : Colors.red ;
-  String tt = t.toStringAsFixed(2); //소수 4자리 반올림 txt
+  String tt = t.toStringAsFixed(2); //소수 2자리 반올림 txt
   var text = (tt[0]!='-')? '+$tt' : tt; // 만약에 음수가 아니라면 +부호 붙여주기.
   return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -255,22 +257,24 @@ ElevatedButton percentText({required dynamic txt, dynamic txt2}) {
   );
 }
 
+// 코인 거래 양을 변환 하기 위한 메서드
 Text volumeText({required dynamic txt}){
   txt = double.parse(txt);
-  txt = (txt/1000).ceil();
-  txt = (txt>1000)? "${(txt/1000).toStringAsFixed(2)}K" : "${txt}M";
+  txt = (txt/1000).ceil(); // 1000으로 나누고 M(메가?)부터 시작
+  txt = (txt>1000)? "${(txt/1000).toStringAsFixed(2)}K" : "${txt}M"; // 1000으로 더 나눌 수 있으면 나누고 K로 변환.
   return Text("Vol $txt", style: const TextStyle(fontSize: 12, color:Colors.grey),
       textAlign: TextAlign.left);
 }
 
-
+// 코인 이름을 나타내기 위한 메서드
 Text coinNameText({required String txt}) {
   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
-  txt = txt.replaceAll("USDT_UMCBL", "");
+  txt = txt.replaceAll("_UMCBL", "");
   return Text(txt, style: const TextStyle(fontSize: 15, color:Colors.black),
       textAlign: TextAlign.left);
 }
 
+//한국 돈으로 변환하기 위한 메서드
 Text toKRWText({required dynamic txt}) {
   //문자열인 text를 숫자로 바꾸기 위해 dynamic 으로 선언
   var dallor = 1322.76;
@@ -280,6 +284,7 @@ Text toKRWText({required dynamic txt}) {
       textAlign: TextAlign.right);
 }
 
+//달러로 표현하기 위한 메서드
 Text dallorText({required dynamic txt}){
   txt = double.parse(txt);
   txt = txt.toStringAsFixed(2);
@@ -317,11 +322,11 @@ Column nameAry({required dynamic mainText, required dynamic subText, required dy
 //       textAlign: TextAlign.right);
 // }
 
-Widget gradientText() {
-  //그라이데이션을 위한 메서드
-  final Shader linearGradientShader = const LinearGradient(colors: [Colors.red, Colors.orange,Colors.blue]).createShader(const Rect.fromLTWH(0.0, 20.0, 150.0, 20.0));
-  return Text('Bitget 비트겟', style: TextStyle(foreground: Paint()..shader = linearGradientShader, fontSize: 40));
-}
+// Widget gradientText() {
+//   //그라이데이션을 위한 메서드
+//   final Shader linearGradientShader = const LinearGradient(colors: [Colors.red, Colors.orange,Colors.blue]).createShader(const Rect.fromLTWH(0.0, 20.0, 150.0, 20.0));
+//   return Text('Bitget 비트겟', style: TextStyle(foreground: Paint()..shader = linearGradientShader, fontSize: 40));
+// }
 
 
 // 토스트 메서드
