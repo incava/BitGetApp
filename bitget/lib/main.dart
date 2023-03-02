@@ -98,10 +98,8 @@ class _BitgetWidgetState extends State<BitgetWidget> {
               children: [
                 //마진 주기.
                 Container(
-                  margin: const EdgeInsets.all(32.0),
+                  child: Image.asset('assets/images/bitget.png'),
                 ),
-
-
                 // Container(
                 //   margin: const EdgeInsets.all(10.0),
                 //   child: Row(
@@ -151,20 +149,20 @@ class _BitgetWidgetState extends State<BitgetWidget> {
                       Expanded(
                         flex: 1,
                         child: Text('Coin/Volume',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
                             textAlign: TextAlign.left),
                       ),
                       Expanded(
                         flex: 1,
                         child: Text('Last price',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
                             textAlign: TextAlign.right),
                       ),
                       Expanded(
                         flex: 1,
                         child: Text(
                           'Change%',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
                           textAlign: TextAlign.right,
                         ),
                       ),
