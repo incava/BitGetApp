@@ -16,6 +16,9 @@ https://github.com/incava/BitGetApp/assets/68988975/ba1866fa-3232-4f05-9798-1a9b
 
 ## 제작하면서 참고한 사이트
 
+-  비트겟 api
+    사이트 : https://bitgetlimited.github.io/apidoc/en/spot/#get-coin-list
+
 - [flutter] 플러터 http api 호출해보기
     
     사이트 : https://cholol.tistory.com/568
